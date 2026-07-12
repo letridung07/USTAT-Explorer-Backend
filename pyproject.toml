@@ -5,9 +5,8 @@ description = "https://docs.astral.sh/uv/"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "understatapi",
-    "fastapi",
+    "understatapi==0.7.1",
+    "fastapi[standard]",
     "ipykernel>=7.3.0",
     "pandas==3.0.3",
-    "uvicorn==0.51.0",
 ]
