@@ -1,14 +1,13 @@
 [project]
 name = "ustat-explorer-backend"
 version = "0.1.0"
-description = "Add your description here"
+description = "https://docs.astral.sh/uv/"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi[standard]==0.139.0",
+    "understatapi",
+    "fastapi",
     "ipykernel>=7.3.0",
     "pandas==3.0.3",
-    "selenium<4",
-    "understatapi==0.5.2",
     "uvicorn==0.51.0",
 ]
