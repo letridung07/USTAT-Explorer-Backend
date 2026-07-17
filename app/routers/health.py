@@ -4,12 +4,11 @@
 from fastapi import APIRouter
 
 router = APIRouter(
-    prefix="/health",
     tags=["Health"],
 )
 
 
-@router.get("")
+@router.get("/health")
 def get_health() -> dict[str, str]:
     """Check whether the backend is running."""
     return {
