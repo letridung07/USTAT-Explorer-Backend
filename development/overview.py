@@ -39,7 +39,7 @@ def calculate_season_summary(league_data):
     1. Total matches, total goals, total xG
     2. XG/Match, Goals/Match
     3. Home, Away and Draw matches and percentage
-    4. Avg home xG and avg awat xG
+    4. Avg home xG and avg away xG
     """
     total_matches: int = len(league_data["dates"])
     total_goals: int = 0

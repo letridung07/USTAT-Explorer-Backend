@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.models.overview import OverviewStat
+from app.models.overview import OverviewSeasonSummary
 from app.services.overview_service import OverviewService
 
 router = APIRouter(
@@ -11,8 +11,8 @@ router = APIRouter(
 service = OverviewService()
 
 @router.get(
-    "/stat",
-    response_model=OverviewStat
+    "/season_summary",
+    response_model=OverviewSeasonSummary
 )
 def get_overview_stat(
     league: str = "EPL",
@@ -22,7 +22,7 @@ def get_overview_stat(
     Returns statistics used by the Overview page
     """
 
-    return service.get_overview(
+    return service.get_season_summary(
         league=league,
         season=season,
     )

@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from app.api.overview import router as overview_router
 
 app = FastAPI(
-    title="USTAT Expolorer Backend",
+    title="USTAT Explorer Backend",
     version="1.0.0"
 )
 
