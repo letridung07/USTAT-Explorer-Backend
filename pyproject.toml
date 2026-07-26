@@ -9,4 +9,5 @@ dependencies = [
     "fastapi[standard]",
     "ipykernel>=7.3.0",
     "pandas==3.0.3",
+    "devtools==0.12.2"
 ]

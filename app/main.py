@@ -1,10 +1,10 @@
 from fastapi import FastAPI
-from routers.health import router as health_router
-from routers.catalog import router as catalog_router
-from routers.matches import router as matches_router
 
-app = FastAPI()
+from app.api.overview import router as overview_router
 
-app.include_router(health_router)
-app.include_router(catalog_router)
-app.include_router(matches_router)
+app = FastAPI(
+    title="USTAT Expolorer Backend",
+    version="1.0.0"
+)
+
+app.include_router(overview_router)
