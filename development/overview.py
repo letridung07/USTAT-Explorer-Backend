@@ -5,17 +5,9 @@ from typing import TypedDict
 from pydantic import BaseModel
 from devtools import pprint, debug
 
-class HighestGoal(BaseModel):
-    goals: int
-    match_id: int
-    match_name: str
-    h_goal: int
-    a_goal: int
+# leagues = ["EPL", "La_Liga", "Bundesliga", "Serie_A", "Ligue_1", "RFPL"]
 
-class HighestXG(BaseModel):
-    xg: float
-    match_id: int
-    match_name: str
+### Overview Season Sunmary ###
 
 class OverviewSeasonSummary(BaseModel):
     total_matches: int
@@ -101,10 +93,59 @@ def print_season_summary(league_data):
     #debug(s)
     #pprint(s)
 
-# def calculate_highlight_matches():
+### Overview Highest Scoring ###
 
+class OverviewHighestScoring(BaseModel):
+    match_id: int
+    match_name: str
+    h_goal: int
+    a_goal: int
+
+def calculate_highest_scoring(league_data):
+    highest_scoring_match = {
+        "match_id": 0,
+        "match_name": "",
+        "h_goal": 0,
+        "a_goal": 0,
+        "scoring": 0
+    }
+
+    for match in league_data["dates"]:
+        home_team_name: str = str(match["h"]["title"])
+        away_team_name: str = str(match["a"]["title"])
+        match_name: str = f"{home_team_name} vs {away_team_name}"
+        
+        goals = match["goals"]
+        h_goal = int(goals["h"])
+        a_goal = int(goals["a"])
+
+        current_scoring: int = h_goal + a_goal
+        if current_scoring > highest_scoring_match["scoring"]:
+            highest_scoring_match["match_id"] = int(match["id"])
+            highest_scoring_match["match_name"] = match_name
+            highest_scoring_match["h_goal"] = h_goal
+            highest_scoring_match["a_goal"] = a_goal
+            highest_scoring_match["scoring"] = current_scoring
+            
+
+    return OverviewHighestScoring(
+        match_id=highest_scoring_match["match_id"],
+        match_name=highest_scoring_match["match_name"],
+        h_goal=highest_scoring_match["h_goal"],
+        a_goal=highest_scoring_match["a_goal"]
+    )
+
+def print_highest_scoring(league_data):
+    h = calculate_highest_scoring(league_data)
+    print(f"calculate_highest_scoring()")
+    print(f"Highest scoring match: {h.match_name}")
+    print(f"Score: {h.h_goal} - {h.a_goal}")
+
+
+### Main Function ###
 understat = UnderstatClient()
-league_data: dict[str, Any] = understat.league("EPL")._get_data("2025")
-print_season_summary(league_data)
+league_data: dict[str, Any] = understat.league("Ligue_1")._get_data("2025")
+#print_season_summary(league_data)
+print_highest_scoring(league_data)
 
 

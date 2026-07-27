@@ -1,7 +1,11 @@
 from fastapi import APIRouter
 
-from app.models.overview import OverviewSeasonSummary
+# Import OverviewService
 from app.services.overview_service import OverviewService
+
+# Import pydantic models
+from app.models.overview import OverviewSeasonSummary
+from app.models.overview import OverviewHighestScoring
 
 router = APIRouter(
     prefix="/overview",
@@ -14,15 +18,24 @@ service = OverviewService()
     "/season_summary",
     response_model=OverviewSeasonSummary
 )
-def get_overview_stat(
+def get_overview_season_summary(
     league: str = "EPL",
     season: str = "2025",
 ):
-    """
-    Returns statistics used by the Overview page
-    """
-
     return service.get_season_summary(
         league=league,
         season=season,
+    )
+
+@router.get(
+    "/highest_scoring",
+    response_model=OverviewHighestScoring
+)
+def get_overview_highest_scoring(
+    league: str = "EPL",
+    season: str = "2025"
+):
+    return service.get_highest_scoring(
+        league=league,
+        season=season
     )
