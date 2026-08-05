@@ -16,7 +16,8 @@ service = OverviewService()
 
 @router.get(
     "/season_summary",
-    response_model=OverviewSeasonSummary
+    response_model=OverviewSeasonSummary,
+    operation_id="getSeasonSummary",
 )
 def get_overview_season_summary(
     league: str = "EPL",
@@ -29,7 +30,8 @@ def get_overview_season_summary(
 
 @router.get(
     "/highest_scoring",
-    response_model=OverviewHighestScoring
+    response_model=OverviewHighestScoring,
+    operation_id="getHighestScoring",
 )
 def get_overview_highest_scoring(
     league: str = "EPL",
