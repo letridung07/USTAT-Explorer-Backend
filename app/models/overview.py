@@ -20,3 +20,13 @@ class OverviewHighestScoring(BaseModel):
     match_name: str
     h_goal: int
     a_goal: int
+
+class OverviewGoalAndXGPerMatch(BaseModel):
+    selected_goal_per_match: float
+    highest_goal_per_match: float
+    lowest_goal_per_match: float
+    average_goal_per_match: float
+    selected_xg_per_match: float
+    highest_xg_per_match: float
+    lowest_xg_per_match: float
+    average_xg_per_match: float

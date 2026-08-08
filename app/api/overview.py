@@ -6,6 +6,7 @@ from app.services.overview_service import OverviewService
 # Import pydantic models
 from app.models.overview import OverviewSeasonSummary
 from app.models.overview import OverviewHighestScoring
+from app.models.overview import OverviewGoalAndXGPerMatch
 
 router = APIRouter(
     prefix="/overview",
@@ -38,6 +39,20 @@ def get_overview_highest_scoring(
     season: str = "2025"
 ):
     return service.get_highest_scoring(
+        league=league,
+        season=season
+    )
+
+@router.get(
+    "/scoring_overview",
+    response_model=OverviewGoalAndXGPerMatch,
+    operation_id="getScoringOverview",
+)
+def get_scoring_overview(
+    league: str = "EPL",
+    season: str = "2025"
+):
+    return service.get_overview_goal_and_xg_per_match(
         league=league,
         season=season
     )
