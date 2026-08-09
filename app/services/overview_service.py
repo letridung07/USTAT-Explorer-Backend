@@ -3,9 +3,11 @@ from app.models.overview import OverviewSeasonSummary
 from app.models.overview import OverviewHighestScoring
 from app.models.overview import OverviewGoalAndXGPerMatch
 from app.clients.understat_client import UnderstatAPI
+from app.utils.overview_utils import get_goal_or_zero, get_xg_or_zero
 
 # Import libraries
 import numpy as np
+import datetime
 from devtools import pprint
 
 import logging
@@ -40,33 +42,61 @@ class OverviewService:
         draws: int = 0
         total_home_xg: float = 0
         total_away_xg: float = 0
-    
+        datetime_now = datetime.datetime.now()
+        completed_matches: int = 0
+        upcoming_matches: int = 0
+        cancelled_matches: int = 0
+
         for match in league_data["dates"]:
+            # Convert match datetime to object
+            match_datetime = datetime.datetime.strptime(
+                match["datetime"],
+                "%Y-%m-%d %H:%M:%S"
+            )
+
+            # Matches: completed, upcoming and cancelled
+            if match["isResult"] == True and match_datetime < datetime_now:
+                completed_matches += 1
+            elif match["isResult"] == False and match_datetime >= datetime_now:
+                upcoming_matches += 1
+            elif match["isResult"] == False and match_datetime < datetime_now:
+                cancelled_matches += 1           
+  
             goals = match["goals"]
             xg = match["xG"]
     
             # Goal
-            h_goal = int(goals["h"])
-            a_goal = int(goals["a"])
+            h_goal = get_goal_or_zero((goals["h"]))
+            a_goal = get_goal_or_zero((goals["a"]))
             total_goals += h_goal + a_goal
     
             # XG
-            h_xg = float(xg["h"])
-            a_xg = float(xg["a"])
+            h_xg = get_xg_or_zero((xg["h"]))
+            a_xg = get_xg_or_zero((xg["a"]))
             total_xg_pre_format += h_xg + a_xg
             total_home_xg += h_xg
             total_away_xg += a_xg
     
             # Used for calculate win percentage
             # Calculate total of home and away win
-            if h_goal > a_goal:
-                home_win += 1
-            elif h_goal < a_goal:
-                away_win += 1
-            elif h_goal == a_goal:
-                draws += 1
+            # Handle case: cancelled match (due to Covid)
+            if match["isResult"] == True:
+                if h_goal > a_goal:
+                    home_win += 1
+                elif h_goal < a_goal:
+                    away_win += 1
+                elif h_goal == a_goal:
+                    draws += 1
+
+            # TODO: Figure out what to do with cancelled match due to external events(weather,...) (isResult==False)
+            # Count toward statistic or not        
+            # elif match["isResult"] == False and goals["h"] != None and goals["a"] != None:
+            #     # TODO
     
         return OverviewSeasonSummary(
+            completed_matches = completed_matches,
+            upcoming_matches = upcoming_matches,
+            cancelled_matches = cancelled_matches,
             total_matches = total_matches,
             total_goals = total_goals,
             total_xg = float(round(total_xg_pre_format, 2)),
@@ -166,11 +196,10 @@ class OverviewService:
             for match in league_data["dates"]:
                 # Goal
                 goals = match["goals"]
-                total_goals += int(goals["h"]) + int(goals["a"])
-
+                total_goals += get_goal_or_zero(goals["h"]) + get_goal_or_zero(goals["a"])
                 # xG
                 xg = match["xG"]
-                total_xg += float(xg["h"]) + float(xg["a"])
+                total_xg += get_xg_or_zero(xg["h"]) + get_xg_or_zero(xg["a"])
 
             # Append to goal and xg per match lists
             goal_per_match: float = total_goals / total_matches    

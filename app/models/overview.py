@@ -1,6 +1,9 @@
 from pydantic import BaseModel
 
 class OverviewSeasonSummary(BaseModel):
+    completed_matches: int
+    upcoming_matches: int
+    cancelled_matches: int
     total_matches: int
     total_goals: int
     total_xg: float
