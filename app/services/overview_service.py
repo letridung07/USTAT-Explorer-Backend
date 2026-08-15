@@ -4,6 +4,7 @@ from app.models.overview import OverviewHighestScoring
 from app.models.overview import OverviewGoalAndXGPerMatch
 from app.clients.understat_client import UnderstatAPI
 from app.utils.overview_utils import get_goal_or_zero, get_xg_or_zero
+from app.utils.special_matches_utils import get_special_matches_stat
 
 # Import libraries
 import numpy as np
@@ -56,6 +57,8 @@ class OverviewService:
 
             # Matches: completed, upcoming and cancelled
             if match["isResult"] == True and match_datetime < datetime_now:
+                print(match_datetime)
+                print(match["isResult"])
                 completed_matches += 1
             elif match["isResult"] == False and match_datetime >= datetime_now:
                 upcoming_matches += 1
@@ -88,10 +91,22 @@ class OverviewService:
                 elif h_goal == a_goal:
                     draws += 1
 
-            # TODO: Figure out what to do with cancelled match due to external events(weather,...) (isResult==False)
-            # Count toward statistic or not        
-            # elif match["isResult"] == False and goals["h"] != None and goals["a"] != None:
-            #     # TODO
+            # Override special cases:
+            match_id: str = match["id"]
+            special_stat = get_special_matches_stat(match_id)
+
+            if special_stat == None:
+                pass
+            else:
+                if special_stat["outcome"] == "draw":
+                    draws += 1
+                elif special_stat["outcome"] == "home_win":
+                    home_win += 1
+                elif special_stat["outcome"] == "away_win":
+                    away_win += 1
+
+                total_goals += special_stat["h_goal"] + special_stat["a_goal"]
+                total_xg_pre_format += special_stat["h_xg"] + special_stat["a_xg"]
     
         return OverviewSeasonSummary(
             completed_matches = completed_matches,
